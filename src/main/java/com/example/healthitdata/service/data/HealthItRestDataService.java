@@ -30,19 +30,17 @@ public class HealthItRestDataService implements IHealthITDataService {
 		Map<String,String> paramsMap = new HashMap<>();
 		paramsMap.put("period", String.valueOf(year));
 		
-		Map<String, Map<String, Object>> jsonMap = getDataFromRest(source, paramsMap);
+		Map<String, Map<String, Object>> jsonMap = parseDataFromRest(source, paramsMap);
 		
 		List<BasicEhrNotesUsage> basicEhrNotesUsageList = new ArrayList<>();
 		for (String key : jsonMap.keySet()) {
-			System.out.println(key);
-			System.out.println("value:"+jsonMap.get(key).toString());
 			Map<String,Object> valueMap = jsonMap.get(key);
 			
 			String stateName = (String) valueMap.get("region");
 			String pctStr = (String) valueMap.get("pct_hospitals_basic_ehr_notes");
-			Double pct = pctStr.equals("") ? 0.0 : Double.parseDouble(pctStr);
+			Double pct = pctStr.equals("") ? 0.0 : Double.parseDouble(pctStr)*100.0;
 			
-			System.out.println("pct:"+valueMap.get("pct_hospitals_basic_ehr_notes"));
+			pct = Math.round(pct * 100.0) / 100.0; // Round to 2 decimal places
 			
 			basicEhrNotesUsageList.add(new BasicEhrNotesUsage(stateName,pct));			
 		}
@@ -50,7 +48,7 @@ public class HealthItRestDataService implements IHealthITDataService {
 		return basicEhrNotesUsageList;
 	}
 	
-	private Map<String, Map<String, Object>> getDataFromRest(String source, Map<String,String> paramsMap) throws DataServiceException {
+	private Map<String, Map<String, Object>> parseDataFromRest(String source, Map<String,String> paramsMap) throws DataServiceException {
 		
 		RestTemplate restTemplate = new RestTemplate();
 		String url = healthITBaseUrl + "?source=" + source;

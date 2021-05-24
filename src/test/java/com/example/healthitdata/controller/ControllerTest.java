@@ -32,7 +32,7 @@ public class ControllerTest {
 	@Test
 	public void listEhrNotesUsageTest() throws Exception {
 		
-		List<BasicEhrNotesUsage> basicEhrNotesUsageList = List.of(new BasicEhrNotesUsage("Maryland",0.71),new BasicEhrNotesUsage("Texas",0.84));
+		List<BasicEhrNotesUsage> basicEhrNotesUsageList = List.of(new BasicEhrNotesUsage("Maryland",71.0),new BasicEhrNotesUsage("Texas",84.0));
 		Mockito.when(healthITService.getBasicEhrNotesUsageDescOrder(2014)).thenReturn(basicEhrNotesUsageList);
 		
 		RequestBuilder request = MockMvcRequestBuilders.get("/api/v1/ehrnotesusage/2014").accept(MediaType.APPLICATION_JSON);
@@ -42,9 +42,8 @@ public class ControllerTest {
 							.andReturn();
 		
 		String resultStr = result.getResponse().getContentAsString();
-		System.out.println("resultStr:"+resultStr);
 		
-		String expected = "[{stateName:\"Maryland\", percentage:0.71},{stateName:\"Texas\", percentage:0.84}]";
+		String expected = "[{stateName:\"Maryland\", percentage:71.0},{stateName:\"Texas\", percentage:84.0}]";
 		
 		JSONAssert.assertEquals(expected, resultStr, false);
 	}
